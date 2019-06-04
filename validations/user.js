@@ -1,59 +1,58 @@
-const Joi = require('joi');
-const createUser = () => {
-   return {
-       body:{
-            username: Joi.string().min(3).max(30).required(),
-            password: Joi.string().min(3).max(30).required()
-       }
-   }
-    
+const Joi =  require('joi');
+
+const condition = {
+    username: Joi.string().alphanum().min(3).max(30),
+    password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
+    _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    email: Joi.string().email({ minDomainSegments: 2 }),
+    gender: Joi.string().valid('Female', 'Male', 'other')
 };
-const  updateUser = () => {
+    
+const creatUser = () => {  
     return {
-        // query: {
-        //     _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/)
-        // },
-        // body: {
-        //     username: Joi.string().min(6).max(30).required(),
-        //     password: Joi.string().min(6).max(30).required()
-        // },
-       
-    }
+        body: {
+            username: condition.username.required(),
+            password: condition.password.required(),
+            email: condition.email.required(),
+            gender: condition.gender.required()
+        }
+    };   
+}
+
+const updateUser = () => {
+    return {
+        body: {
+            username: condition.username,
+            password: condition.password,
+            email: condition.email,
+            gender: condition.gender
+
+        },
+        params: {
+            id: condition._id.required()
+        }
+    };
 };
 
-    
-const getOneUser = ()  => {
+const getUser = () => {
     return {
-        query:{
-            _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+        params: {
+            id: condition._id.required()
         }
-        // access_token: [Joi.string(), Joi.number()],
-        // birthyear: Joi.number().integer().min(1900).max(2013),
-        // email: Joi.string().email({ minDomainSegments: 2 })
-        };
     };
-    
-const  deleteUser = () => {
-   return {
-       query:{
-        _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/)
-       }
-    }
-};
-const login = () => {
+}
+
+const deleteUser = () => {
     return {
-        body:{
-            username: Joi.string().min(3).max(30).required(),
-            password: Joi.string().min(3).max(30).required()
-       },
+        params: {
+            id: condition._id.required()
+        }
     };
-};
-    
-    
+}
+
 module.exports = {
-    createUser,
+    creatUser,
     updateUser,
-    getOneUser,
-    deleteUser,
-    login
-};
+    getUser,
+    deleteUser
+}

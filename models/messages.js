@@ -1,21 +1,21 @@
-const { mongoose } = require('./index');
-
-const Messageschema = new mongoose.Schema({
+const { mongoose } = require('./index.js');
+const messageSchema = new mongoose.Schema({
     author: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+        type: mongoose.Types.ObjectId, 
+        ref: 'User',
+        // required: true
     },
     content: {
         type: String,
-        required: true
+        required: true,
     },
     group: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         ref: 'Group'
+    },
+    deleteAt: {
+        type: Date
     }
- }, { timestamps: true })
-
-const Messages = mongoose.model('Messages', Messageschema)
-
-module.exports = Messages;
+}, {timestamps: true});
+const Message = mongoose.model('Message', messageSchema);
+module.exports = Message;

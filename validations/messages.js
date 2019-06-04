@@ -1,46 +1,48 @@
 const Joi = require('joi');
-const createMessage = () => {
-   return {
-    body:{
-        content: Joi.string().min(6).max(30).required(),
-        author: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-        group: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-   }
+const condition = {
+    _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    // author: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    group: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    content: Joi.string().min(3).max(500)
 }
-    
-};
-const  updateMessage = () => {
+const createMessage = () => {
     return {
         body: {
-            content: Joi.string().min(6).max(30).required(),
-       },
-       params: {
-            id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-       },
-    }
-};
-
-    
-const getOneMessage = ()  => {
+            group : condition.group.required(),
+            content: condition.content.required()
+        }
+    };
+}
+const deleteMessage = () => {
     return {
         params: {
-            _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+            id: condition._id.required()
+        }
+    }
+}
+
+const updateMessage = () => {
+    return {
+        body: {
+            // author: condition.author,
+            group : condition.group,
+            content: condition.content
+        },
+        params: {
+            id: condition._id.required()
+        }
+    }
+}
+const getMessage = () => {
+    return {
+        params: {
+            id: condition._id.required()
         }
     }
 };
-    
-const  deleteMessage = () => {
-   return {
-       params: {
-        _id : Joi.string().regex(/^[0-9a-fA-F]{24}$/)
-       },
-    };
-};
-    
-    
 module.exports = {
+    getMessage,
     createMessage,
     updateMessage,
-    getOneMessage,
-    deleteMessage,
-};
+    deleteMessage
+}

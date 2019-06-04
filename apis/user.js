@@ -1,24 +1,15 @@
+const userValidation = require('../validations/user.js');
+const controllerUser = require('../controllers/user.js');
+const validate = require('express-validation');
+const { checkAuthentication } = require('../middlewares/authentication.js');
 
-const userValidation = require('../validations/user');
-const userController = require('../controlers/user');
-const validation = require('express-validation');
-const { verifyToken } = require('../middlewares/authentication')
-const Joi = require('@hapi/joi');
-
-const schema = Joi.object().keys({
-    username: Joi.string().required().min(3).max(20),
-    password: Joi.string().required().min(3).max(20)
-    // access_token: [Joi.string(), Joi.number()],
-    // birthyear: Joi.number().integer().min(1900).max(2013),
-    // email: Joi.string().email({ minDomainSegments: 2 })
-})//.with('username', 'birthyear').without('password', 'access_token');
-exports.load = function(app) {
-    app.get('/api/v1/users/', [ verifyToken ], userController.getListUser);
-    app.post('/api/v1/login', userController.login)
-	app.post('/api/v1/users/', validation(userValidation.createUser()), userController.createUser)
-	app.delete('/api/v1/users/:id',[ verifyToken, validation(userValidation.deleteUser())], userController.deleteUser)
-	app.put('/api/v1/users/:id', [ verifyToken, validation(userValidation.updateUser())], userController.updateUser)
-    app.get('/api/v1/users/:id', [ verifyToken, validation(userValidation.getOneUser())], userController.getOneUser);
-    app.post('/api/v1/forgetpassword', userController.forgetPassword);
-    app.post('/api/v1/resetpassword', userController.resetPassWord);
+exports.load = (app) => {
+    app.post('/api/v1/users', validate(userValidation.creatUser()), controllerUser.createUser);
+    app.post('/api/v1/login', controllerUser.login);
+    app.delete('/api/v1/users/:id',[ checkAuthentication, validate(userValidation.deleteUser()) ], controllerUser.deleteUser);
+    app.get('/api/v1/users/:id', [ checkAuthentication, validate(userValidation.getUser()) ], controllerUser.getUser);
+    app.get( '/api/v1/users', checkAuthentication, controllerUser.getListUser);
+    app.put('/api/v1/users/:id', [ checkAuthentication, validate(userValidation.updateUser()) ], controllerUser.updateUser);   
+    app.post('/api/v1/users/forget-password', controllerUser.forgetPassword);
+    app.post('/api/v1/users/reset-password', controllerUser.resetPassword);
 }

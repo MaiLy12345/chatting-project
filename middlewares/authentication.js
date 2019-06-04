@@ -1,20 +1,22 @@
-const jwt  = require('jsonwebtoken');
 const { verify } = require('../helpers/jwt-helper');
 
-exports.verifyToken = function(req, res, next) {
+exports.checkAuthentication = (req, res, next) => {
     try {
-        let token = req.body.token || req.query.token || req.headers.token;
-        let queryToken = req.query.token;
-        if (!token) {
-            return next(new Error('AUTHENTICATION_FAILED'));
+        let token = req.body.token || req.params.token || req.headers.token;
+        let queryToken = req.query.token;     
+     
+        if (!queryToken) {
+            const [ prefixToken, accessToken ] = token.split(' ');
+            if (prefixToken !== 'Bearer') {
+                return next(new Error('JWT_INVALID_FORMAT'));
+            }
+            token = accessToken;
+        } else {
+            token = queryToken;
         }
-        const [ prefixToken, accessToken ] = token.split(' ');
-        if (prefixToken != 'Bearer') {
-            return next(new Error('JWT_INVALID_FORMAT'));
-        }
-        token = accessToken;
-        const verifyData = verify(token);
-        req.user = verifyData;
+        const verifiedData = verify(token);
+        req.user = verifiedData;
+        console.log(req.user);
         return next();
     } catch (e) {
         return next(e);

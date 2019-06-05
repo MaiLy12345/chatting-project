@@ -8,7 +8,7 @@ exports.checkAuthentication = (req, res, next) => {
         if (!queryToken) {
             const [ prefixToken, accessToken ] = token.split(' ');
             if (prefixToken !== 'Bearer') {
-                return next(new Error('JWT_INVALID_FORMAT'));
+                return next(new Error('JWT invalid'));
             }
             token = accessToken;
         } else {

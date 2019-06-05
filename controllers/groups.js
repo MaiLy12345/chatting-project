@@ -7,7 +7,7 @@ const createGroup = async (req, res, next) => {
         const setMembers = Array.from(new Set(data.members));
         const countUser = await userRepository.count({ where: { _id : setMembers } });
         if (countUser !== setMembers.length) {
-            throw new Error('HAVE_A_MEMBER_INVALID');
+            throw new Error('invalid member');
         }
         if (!setMembers.includes(data.author)) {
             setMembers.push(data.author);
@@ -28,7 +28,7 @@ const inviteGroup = async (req, res, next) => {
         const { id } = req.params;
         const invitingGroup = await groupRepository.updateOne({ where: {_id: id, members: req.user._id}, data: { $addToSet : { members: req.body.members }}});
         if (invitingGroup.nModified === 0) {
-            return next(new Error('MEMBERS_CAN_ARE EXISTED_OR_INVALID'));
+            return next(new Error('member is existed or invalid'));
         }   
         return res.status(200).json({
             message: 'Invite successfully'
@@ -41,11 +41,11 @@ const leaveGroup = async (req, res, next) => {
     const { id } = req.params;
     const existGroup = await groupRepository.getOne({ where: { _id: id, members: req.user._id} });
     if (!existGroup) {
-        return next(new Error('GROUP_NOT_EXISTED'));
+        return next(new Error('Group is not existed'));
     }
     const leavingGroup = await groupRepository.updateOne({ where: { _id: id }, data: { $pull: { members: req.user._id }}});
     if (leavingGroup.nModified === 0) {
-        return next(new Error('GROUP_NOT_EXISTED'));
+        return next(new Error('Group is not existed'));
     }
     return res.status(200).json({
         message: 'Leave group sucessfully'
@@ -121,9 +121,6 @@ const deleteGroup = async (req, res, next) => {
         if (!existGroup) {
             return next(new Error('GROUP_NOT_FOUND'));
         }
-        // if (loginAuthor.toString() !== existGroup.author.toString()) {
-        //     return next(new Error('CANNOT_DELETE'));
-        // }
         await groupRepository.deleteOne({ where: { _id: id }});
         return res.status(200).json({ 
             message: 'Delete group successfully ',
@@ -140,15 +137,15 @@ const updateGroup = async (req, res, next) => {
         const author = req.user._id;
         let existGroup = await groupRepository.getOne({ where: { _id: id }, select: 'author' });
         if (!existGroup) {
-            return next(new Error('GROUP_NOT_FOUND'));
+            return next(new Error('Group is not found'));
         }
         if (JSON.stringify(existGroup.author)!== JSON.stringify(author)) {
-            return next(new Error('CANNOT_UPDATE'));
+            return next(new Error('Group can not update'));
         }
         if (author) {
             const existUser = await groupRepository.getOne({ where: { _id: id, members: author }}).lean();
             if (!existUser) {
-                return next(new Error('AUTHOR_CHANGE_NOT_EXIST_IN_GROUP'));
+                return next(new Error('You does have access update'));
             }
         }
         const newValues = { $set: data };

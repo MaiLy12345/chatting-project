@@ -14,7 +14,7 @@ app.use(express.static(__dirname + '/public'));
  
 models
 .connectDB()
-.then(console.log('connect db successfully'))
+.then(console.log('connect db ok'))
 .catch(function (e) {
     console.error(e);
     process.exit(1);

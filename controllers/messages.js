@@ -5,7 +5,7 @@ const sendMessage = async (req, res, next) => {
         const loginAuthor = req.user._id;
         const existGroup = await groupRepository.getOne({where: {_id: data.group, members: loginAuthor}});
         if (!existGroup) {
-            return next(new Error('NOT_EXISTED_GROUP')); 
+            return next(new Error(' Group is not EXIST')); 
         }
         data.author = loginAuthor;
         const sendMessage = await messageRepository.create(data);
@@ -23,7 +23,7 @@ const getMessage = async (req, res, next) => {
         const { id } = req.params;
         const message = await messageRepository.getOne({where: { _id: id }, populate: { path: 'author', select: 'username'}});
         if (!message) {
-            return next(new Error('NOT_EXISTED_MESSAGE'));
+            return next(new Error('Message is not EXIST'));
         }
         return res.status(200).json({
             message: 'message ',
@@ -54,7 +54,7 @@ const getListMessageOfGroup = async (req, res, next) => {
         let limit = parseInt(req.query.limit);
         const existGroup = groupRepository.getOne({where: { _id: id, members: author}, select: '_id'});
         if (!existGroup) {
-            return next(new Error('NOT_EXISTED_GROUP'));
+            return next(new Error('Group is not EXIST'));
         }
         const messages = await messageRepository.getAll({ where : { group : id }, select: 'content author createdAt', populate: {
             path: 'author',

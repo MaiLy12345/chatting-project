@@ -29,7 +29,7 @@
     "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.5.10",
+    "mongoose": "^5.7.5",
     "nodemailer": "^6.2.1",
     "randomstring": "^1.1.5",
     "socket.io": "^2.2.0",

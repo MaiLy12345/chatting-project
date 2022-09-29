@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/MaiLy12345/chatting-project#readme",
   "dependencies": {
-    "@hapi/joi": "^15.0.3",
+    "@hapi/joi": "^15.1.1",
     "bcrypt-nodejs": "0.0.3",
     "bcryptjs": "^2.4.3",
     "body-parse": "^0.1.0",
